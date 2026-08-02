@@ -1,0 +1,1203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HTML email accessibility tester</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root {
+  --ink: #16233d;
+  --ink-soft: #4a5875;
+  --paper: #efefef;
+  --panel: #ffffff;
+  --line: #d9d2be;
+  --border-strong: #dddddd;
+  --red: #a5322a;
+  --red-bg: #fbeae7;
+  --green: #29614a;
+  --green-bg: #e9f2ec;
+  --amber: #93641a;
+  --amber-bg: #faf1dc;
+  --neutral: #5b6472;
+  --neutral-bg: #f4f3ef;
+  --info: #29506b;
+  --info-bg: #e6eef3;
+  --focus: #1b4fbf;
+  --brand: #c03c0c;
+  --font-brand: 'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, Frutiger, 'Frutiger Linotype', Univers, Calibri, 'Gill Sans', 'Gill Sans MT', 'Myriad Pro', Myriad, 'DejaVu Sans Condensed', 'Liberation Sans', 'Nimbus Sans L', Tahoma, Geneva, sans-serif;
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'IBM Plex Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+  --radius: 4px;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  line-height: 1.5;
+}
+
+a { color: var(--info); }
+
+:focus { outline: 3px solid var(--focus); outline-offset: 2px; }
+:focus:not(:focus-visible) { outline: none; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+.wrap {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 24px 96px;
+}
+
+/* header */
+
+.site-header {
+  padding: 30px 0 0px;
+  margin-bottom: 30px;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.intopia-logo {
+  width: 180px;
+  height: auto;
+  flex: none;
+}
+
+.brand-text h1 {
+  font-family: var(--font-brand);
+  color: var(--brand);
+  font-size: 2.4rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.brand-text p {
+  margin: 4px 0 0;
+  color: #000000;
+  font-size: 16px;
+}
+
+/* paste screen */
+
+.field-label {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.05rem;
+  margin-bottom: 8px;
+}
+
+.field-hint {
+  color: #000000;
+  font-size: 1rem;
+  margin: 0 0 12px;
+}
+
+textarea#html-input {
+  width: 100%;
+  min-height: 320px;
+  padding: 16px;
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  color: var(--ink);
+  background: var(--panel);
+  border: 2px solid var(--border-strong);
+  border-radius: var(--radius);
+  resize: vertical;
+}
+
+textarea#html-input[aria-invalid="true"] {
+  border-color: var(--red);
+}
+
+#input-error {
+  color: var(--red);
+  font-weight: 600;
+  font-size: 1rem;
+  min-height: 1.2em;
+  margin: 10px 0 0;
+}
+
+.button-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+button {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  border-radius: var(--radius);
+  padding: 12px 22px;
+}
+
+.btn-primary {
+  background: var(--brand);
+  color: #ffffff;
+  border: 2px solid var(--brand);
+}
+.btn-primary:hover { background: #9e3009; border-color: #9e3009; }
+
+.btn-secondary {
+  background: var(--brand);
+  color: #ffffff;
+  border: 2px solid var(--brand);
+}
+.btn-secondary:hover { background: #9e3009; border-color: #9e3009; }
+
+/* summary tickets */
+
+.summary {
+  background: var(--panel);
+  border: 2px solid var(--border-strong);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 40px;
+}
+
+.summary h2 {
+  font-family: var(--font-brand);
+  color: #000000;
+  font-size: 1.375rem;
+  margin: 0 0 16px;
+}
+
+.ticket-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ticket-list li {
+  margin: 0;
+}
+
+.ticket {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--ink);
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: #f5f5f5;
+  width: 100%;
+}
+.ticket:hover { border-color: var(--ink-soft); }
+
+.ticket-name {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* badges */
+
+.badge {
+  display: inline-block;
+  flex: none;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1.5px solid currentColor;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.badge--pass { color: var(--green); background: var(--green-bg); }
+.badge--fail { color: var(--red); background: var(--red-bg); }
+.badge--warn { color: var(--amber); background: var(--amber-bg); }
+.badge--na   { color: var(--neutral); background: var(--neutral-bg); }
+
+.contrast-swatch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 24px;
+  flex: none;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* test cards */
+
+.test-card {
+  background: var(--panel);
+  border: 2px solid var(--border-strong);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 24px;
+  scroll-margin-top: 24px;
+}
+
+.test-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.test-card__header h2 {
+  font-family: var(--font-brand);
+  color: #000000;
+  font-size: 1.375rem;
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.test-summary {
+  margin: 0 0 16px;
+  color: var(--ink-soft);
+}
+
+.test-note {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  background: var(--info-bg);
+  border-left: 3px solid var(--info);
+  border-radius: 2px;
+  font-size: 1rem;
+  color: var(--ink);
+}
+
+/* result lists */
+
+.result-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.result-item {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--line);
+  border-radius: 2px;
+  background: var(--paper);
+  font-size: 1rem;
+}
+
+.result-item--flag {
+  border-left-color: var(--red);
+  background: var(--red-bg);
+}
+
+.result-item--decorative {
+  border-left-color: var(--neutral);
+}
+
+.result-list--headings .result-item {
+  margin-left: calc(var(--indent, 0) * 20px);
+}
+
+.result-tag {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  padding: 1px 6px;
+}
+
+.result-text {
+  flex: 1;
+  min-width: 120px;
+  word-break: break-word;
+}
+
+.result-meta {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  word-break: break-all;
+}
+
+.flag-badge {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #fff;
+  background: var(--red);
+  border-radius: 2px;
+  padding: 2px 6px;
+}
+
+.badge-neutral {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--neutral);
+  background: var(--neutral-bg);
+  border-radius: 2px;
+  padding: 2px 6px;
+}
+
+.fact-value {
+  font-family: var(--font-mono);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  padding: 8px 12px;
+  display: inline-block;
+}
+
+.fact-missing {
+  color: var(--red);
+  font-weight: 600;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0; border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+footer.site-footer {
+  border-top: 2px solid var(--line);
+  padding-top: 20px;
+  margin-top: 40px;
+  color: var(--ink-soft);
+  font-size: 1rem;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="site-header">
+    <div class="brand">
+      <img src="https://intopia.digital/wp-content/themes/intopia-refresh/assets/images/intopia.png" alt="Intopia logo" class="intopia-logo">
+      <div class="brand-text">
+        <h1>HTML email accessibility tester</h1>
+        <p>Paste HTML email markup and check it for accessibility issues.</p>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <div role="status" aria-live="polite" class="visually-hidden" id="status-region"></div>
+
+    <section id="paste-screen">
+      <label class="field-label" for="html-input">Email HTML markup</label>
+      <p class="field-hint">Paste the full HTML source of your email, including the <code>&lt;html&gt;</code> and <code>&lt;head&gt;</code>, so title, language and encoding can be checked too.</p>
+      <textarea id="html-input" spellcheck="false" aria-describedby="input-error"></textarea>
+      <p id="input-error" role="alert"></p>
+      <div class="button-row">
+        <button type="button" class="btn-primary" id="run-btn">Run accessibility checks</button>
+        <button type="button" class="btn-secondary" id="sample-btn">Load a sample email</button>
+      </div>
+    </section>
+
+    <section id="results-screen" hidden>
+      <h2 class="visually-hidden" id="results-heading" tabindex="-1">Results</h2>
+
+      <div class="summary">
+        <h2>Summary</h2>
+        <ul class="ticket-list" id="summary-tickets"></ul>
+      </div>
+
+      <div id="results-body"></div>
+
+      <div class="button-row">
+        <button type="button" class="btn-secondary" id="start-over-btn">Start over</button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>This tester runs entirely in your browser. Nothing you paste is sent anywhere.</p>
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var TEST_NAMES = {
+    1: 'Document title',
+    2: 'Document language',
+    3: 'Document encoding',
+    4: 'Headings',
+    5: 'Links',
+    6: 'Images',
+    7: 'Alt text quality',
+    8: 'Tables',
+    9: 'Colour contrast',
+    10: 'Duplicate IDs'
+  };
+
+  var SAMPLE_HTML = '<!DOCTYPE html>\n<html>\n<head>\n<meta charset="UTF-8">\n</head>\n<body>\n' +
+    '<h1>Weekly digest</h1>\n' +
+    '<h4>This week in accessibility</h4>\n' +
+    '<h5>Top story</h5>\n' +
+    '<table role="presentation" width="600">\n<tr><td>\n' +
+    '<img src="hero.jpg" width="600">\n' +
+    '<p style="color:#cccccc;">Read on for this week\'s roundup.</p>\n' +
+    '<a href="https://example.com/article-1">Read more</a>\n' +
+    '<a href="https://example.com/article-2">Read more</a>\n' +
+    '<img src="divider.png" alt="">\n' +
+    '<img src="promo.jpg" alt="image1.jpg">\n' +
+    '<h2>Upcoming events</h2>\n' +
+    '<table id="events-table">\n<tr><td>12 Aug</td><td>Webinar</td></tr>\n</table>\n' +
+    '<a href="https://example.com/unsubscribe" aria-label="Unsubscribe from this newsletter" id="events-table"><img src="footer-link.png" alt=""></a>\n' +
+    '</td></tr>\n</table>\n' +
+    '</body>\n</html>';
+
+  // ---------- colour utilities ----------
+
+  var NAMED_COLORS = {
+    aliceblue:'#f0f8ff', antiquewhite:'#faebd7', aqua:'#00ffff', aquamarine:'#7fffd4', azure:'#f0ffff',
+    beige:'#f5f5dc', bisque:'#ffe4c4', black:'#000000', blanchedalmond:'#ffebcd', blue:'#0000ff',
+    blueviolet:'#8a2be2', brown:'#a52a2a', burlywood:'#deb887', cadetblue:'#5f9ea0', chartreuse:'#7fff00',
+    chocolate:'#d2691e', coral:'#ff7f50', cornflowerblue:'#6495ed', cornsilk:'#fff8dc', crimson:'#dc143c',
+    cyan:'#00ffff', darkblue:'#00008b', darkcyan:'#008b8b', darkgoldenrod:'#b8860b', darkgray:'#a9a9a9',
+    darkgreen:'#006400', darkgrey:'#a9a9a9', darkkhaki:'#bdb76b', darkmagenta:'#8b008b', darkolivegreen:'#556b2f',
+    darkorange:'#ff8c00', darkorchid:'#9932cc', darkred:'#8b0000', darksalmon:'#e9967a', darkseagreen:'#8fbc8f',
+    darkslateblue:'#483d8b', darkslategray:'#2f4f4f', darkslategrey:'#2f4f4f', darkturquoise:'#00ced1', darkviolet:'#9400d3',
+    deeppink:'#ff1493', deepskyblue:'#00bfff', dimgray:'#696969', dimgrey:'#696969', dodgerblue:'#1e90ff',
+    firebrick:'#b22222', floralwhite:'#fffaf0', forestgreen:'#228b22', fuchsia:'#ff00ff', gainsboro:'#dcdcdc',
+    ghostwhite:'#f8f8ff', gold:'#ffd700', goldenrod:'#daa520', gray:'#808080', grey:'#808080',
+    green:'#008000', greenyellow:'#adff2f', honeydew:'#f0fff0', hotpink:'#ff69b4', indianred:'#cd5c5c',
+    indigo:'#4b0082', ivory:'#fffff0', khaki:'#f0e68c', lavender:'#e6e6fa', lavenderblush:'#fff0f5',
+    lawngreen:'#7cfc00', lemonchiffon:'#fffacd', lightblue:'#add8e6', lightcoral:'#f08080', lightcyan:'#e0ffff',
+    lightgoldenrodyellow:'#fafad2', lightgray:'#d3d3d3', lightgreen:'#90ee90', lightgrey:'#d3d3d3', lightpink:'#ffb6c1',
+    lightsalmon:'#ffa07a', lightseagreen:'#20b2aa', lightskyblue:'#87cefa', lightslategray:'#778899', lightslategrey:'#778899',
+    lightsteelblue:'#b0c4de', lightyellow:'#ffffe0', lime:'#00ff00', limegreen:'#32cd32', linen:'#faf0e6',
+    magenta:'#ff00ff', maroon:'#800000', mediumaquamarine:'#66cdaa', mediumblue:'#0000cd', mediumorchid:'#ba55d3',
+    mediumpurple:'#9370db', mediumseagreen:'#3cb371', mediumslateblue:'#7b68ee', mediumspringgreen:'#00fa9a', mediumturquoise:'#48d1cc',
+    mediumvioletred:'#c71585', midnightblue:'#191970', mintcream:'#f5fffa', mistyrose:'#ffe4e1', moccasin:'#ffe4b5',
+    navajowhite:'#ffdead', navy:'#000080', oldlace:'#fdf5e6', olive:'#808000', olivedrab:'#6b8e23',
+    orange:'#ffa500', orangered:'#ff4500', orchid:'#da70d6', palegoldenrod:'#eee8aa', palegreen:'#98fb98',
+    paleturquoise:'#afeeee', palevioletred:'#db7093', papayawhip:'#ffefd5', peachpuff:'#ffdab9', peru:'#cd853f',
+    pink:'#ffc0cb', plum:'#dda0dd', powderblue:'#b0e0e6', purple:'#800080', rebeccapurple:'#663399',
+    red:'#ff0000', rosybrown:'#bc8f8f', royalblue:'#4169e1', saddlebrown:'#8b4513', salmon:'#fa8072',
+    sandybrown:'#f4a460', seagreen:'#2e8b57', seashell:'#fff5ee', sienna:'#a0522d', silver:'#c0c0c0',
+    skyblue:'#87ceeb', slateblue:'#6a5acd', slategray:'#708090', slategrey:'#708090', snow:'#fffafa',
+    springgreen:'#00ff7f', steelblue:'#4682b4', tan:'#d2b48c', teal:'#008080', thistle:'#d8bfd8',
+    tomato:'#ff6347', turquoise:'#40e0d0', violet:'#ee82ee', wheat:'#f5deb3', white:'#ffffff',
+    whitesmoke:'#f5f5f5', yellow:'#ffff00', yellowgreen:'#9acd32'
+  };
+
+  function parseColor(value) {
+    if (!value) return null;
+    value = value.trim().toLowerCase();
+    if (value === 'transparent' || value === 'inherit' || value === 'initial' || value === 'currentcolor' || value === 'none') return null;
+    var hexMatch = value.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/);
+    if (hexMatch) {
+      var hex = hexMatch[1];
+      if (hex.length === 3) hex = hex.split('').map(function (c) { return c + c; }).join('');
+      return { r: parseInt(hex.slice(0, 2), 16), g: parseInt(hex.slice(2, 4), 16), b: parseInt(hex.slice(4, 6), 16) };
+    }
+    var rgbMatch = value.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+)\s*)?\)$/);
+    if (rgbMatch) {
+      var alpha = rgbMatch[4] !== undefined ? parseFloat(rgbMatch[4]) : 1;
+      if (alpha < 1) return null;
+      return { r: parseInt(rgbMatch[1], 10), g: parseInt(rgbMatch[2], 10), b: parseInt(rgbMatch[3], 10) };
+    }
+    if (NAMED_COLORS.hasOwnProperty(value)) return parseColor(NAMED_COLORS[value]);
+    return null;
+  }
+
+  function relativeLuminance(c) {
+    function chan(v) {
+      var s = v / 255;
+      return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+    }
+    return 0.2126 * chan(c.r) + 0.7152 * chan(c.g) + 0.0722 * chan(c.b);
+  }
+
+  function contrastRatio(c1, c2) {
+    var l1 = relativeLuminance(c1);
+    var l2 = relativeLuminance(c2);
+    var lighter = Math.max(l1, l2);
+    var darker = Math.min(l1, l2);
+    return (lighter + 0.05) / (darker + 0.05);
+  }
+
+  function toHex(c) {
+    function h(v) { var s = v.toString(16); return s.length === 1 ? '0' + s : s; }
+    return '#' + h(c.r) + h(c.g) + h(c.b);
+  }
+
+  function parseInlineStyle(styleAttr) {
+    var map = {};
+    if (!styleAttr) return map;
+    styleAttr.split(';').forEach(function (decl) {
+      var idx = decl.indexOf(':');
+      if (idx === -1) return;
+      var prop = decl.slice(0, idx).trim().toLowerCase();
+      var val = decl.slice(idx + 1).trim();
+      if (prop) map[prop] = val;
+    });
+    return map;
+  }
+
+  function hasDirectText(node) {
+    for (var i = 0; i < node.childNodes.length; i++) {
+      var c = node.childNodes[i];
+      if (c.nodeType === 3 && c.textContent.trim().length > 0) return true;
+    }
+    return false;
+  }
+
+  function parseFontSizePx(value) {
+    if (!value) return null;
+    var m = value.trim().match(/^([\d.]+)(px|pt)$/i);
+    if (!m) return null;
+    var num = parseFloat(m[1]);
+    return m[2].toLowerCase() === 'pt' ? num * 1.3333 : num;
+  }
+
+  function isBoldFor(node, styleMap) {
+    var fw = (styleMap['font-weight'] || '').toLowerCase();
+    if (fw === 'bold' || fw === 'bolder') return true;
+    var num = parseInt(fw, 10);
+    if (!isNaN(num) && num >= 700) return true;
+    var t = node;
+    var depth = 0;
+    while (t && depth < 4) {
+      if (t.tagName === 'B' || t.tagName === 'STRONG') return true;
+      t = t.parentElement;
+      depth++;
+    }
+    return false;
+  }
+
+  function findEffectiveBackground(node) {
+    var current = node;
+    while (current) {
+      var styleMap = parseInlineStyle(current.getAttribute && current.getAttribute('style'));
+      var bg = styleMap['background-color'] || styleMap['background'];
+      if (bg) {
+        var color = parseColor(bg);
+        if (!color) {
+          var tokens = bg.split(/\s+/);
+          for (var i = 0; i < tokens.length; i++) {
+            var c = parseColor(tokens[i]);
+            if (c) { color = c; break; }
+          }
+        }
+        if (color) return { color: color, assumed: false };
+      }
+      if (current.getAttribute && current.getAttribute('bgcolor')) {
+        var legacy = parseColor(current.getAttribute('bgcolor'));
+        if (legacy) return { color: legacy, assumed: false };
+      }
+      current = current.parentElement;
+    }
+    return { color: { r: 255, g: 255, b: 255 }, assumed: true };
+  }
+
+  // ---------- DOM helper ----------
+
+  function el(tag, attrs, children) {
+    var node = document.createElement(tag);
+    attrs = attrs || {};
+    Object.keys(attrs).forEach(function (k) {
+      var v = attrs[k];
+      if (v == null) return;
+      if (k === 'class') node.className = v;
+      else if (k === 'text') node.textContent = v;
+      else node.setAttribute(k, v);
+    });
+    if (children) {
+      (Array.isArray(children) ? children : [children]).forEach(function (c) {
+        if (c == null) return;
+        node.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+      });
+    }
+    return node;
+  }
+
+  // ---------- accessible name ----------
+
+  function textWithImgAlt(node) {
+    var result = '';
+    node.childNodes.forEach(function (child) {
+      if (child.nodeType === 3) {
+        result += child.textContent;
+      } else if (child.nodeType === 1) {
+        if (child.tagName === 'IMG') {
+          result += child.getAttribute('alt') || '';
+        } else {
+          result += textWithImgAlt(child);
+        }
+      }
+    });
+    return result;
+  }
+
+  function getAccessibleName(node, doc) {
+    var labelledby = node.getAttribute('aria-labelledby');
+    if (labelledby) {
+      var text = labelledby.split(/\s+/).map(function (id) {
+        var ref = doc.getElementById(id);
+        return ref ? ref.textContent.trim() : '';
+      }).filter(Boolean).join(' ').trim();
+      if (text) return text;
+    }
+    var ariaLabel = node.getAttribute('aria-label');
+    if (ariaLabel && ariaLabel.trim()) return ariaLabel.trim();
+    var content = textWithImgAlt(node).replace(/\s+/g, ' ').trim();
+    if (content) return content;
+    var title = node.getAttribute('title');
+    if (title && title.trim()) return title.trim();
+    return '';
+  }
+
+  // ---------- checks ----------
+
+  function checkHeadings(doc) {
+    var headings = Array.prototype.slice.call(doc.querySelectorAll('h1,h2,h3,h4,h5,h6'));
+    var prevLevel = 0;
+    var results = headings.map(function (h) {
+      var level = parseInt(h.tagName.charAt(1), 10);
+      var text = h.textContent.trim() || '(empty heading)';
+      var skip = prevLevel > 0 && level > prevLevel + 1;
+      prevLevel = level;
+      return { level: level, text: text, skip: skip };
+    });
+    return {
+      present: headings.length > 0,
+      logical: headings.length > 0 && !results.some(function (r) { return r.skip; }),
+      results: results
+    };
+  }
+
+  function checkLinks(doc) {
+    var anchors = Array.prototype.slice.call(doc.querySelectorAll('a[href]'));
+    var names = anchors.map(function (a) { return getAccessibleName(a, doc); });
+    var counts = {};
+    names.forEach(function (n) {
+      var key = n.trim().toLowerCase();
+      if (!key) return;
+      counts[key] = (counts[key] || 0) + 1;
+    });
+    var results = anchors.map(function (a, i) {
+      var name = names[i].trim();
+      var hasName = name.length > 0;
+      var key = name.toLowerCase();
+      var isUnique = hasName ? counts[key] === 1 : true;
+      return { name: name, hasName: hasName, isUnique: isUnique, href: a.getAttribute('href') };
+    });
+    return { results: results };
+  }
+
+  function checkImages(doc) {
+    var imgs = Array.prototype.slice.call(doc.querySelectorAll('img'));
+    var results = imgs.map(function (img) {
+      return {
+        hasAttr: img.hasAttribute('alt'),
+        alt: img.getAttribute('alt') || '',
+        src: img.getAttribute('src') || ''
+      };
+    });
+    return { results: results };
+  }
+
+  function checkTitle(doc) {
+    var t = doc.querySelector('title');
+    var text = t ? t.textContent.trim() : '';
+    return { present: !!text, value: text };
+  }
+
+  function checkLang(doc) {
+    var lang = doc.documentElement.getAttribute('lang');
+    return { present: !!(lang && lang.trim()), value: lang };
+  }
+
+  function checkEncoding(doc) {
+    var metaCharset = doc.querySelector('meta[charset]');
+    if (metaCharset) return { present: true, value: metaCharset.getAttribute('charset') };
+    var metaEquiv = Array.prototype.slice.call(doc.querySelectorAll('meta[http-equiv]'))
+      .find(function (m) { return (m.getAttribute('http-equiv') || '').toLowerCase() === 'content-type'; });
+    if (metaEquiv) {
+      var content = metaEquiv.getAttribute('content') || '';
+      var match = content.match(/charset=([^;]+)/i);
+      if (match) return { present: true, value: match[1].trim() };
+    }
+    return { present: false, value: null };
+  }
+
+  function checkTables(doc) {
+    var tables = Array.prototype.slice.call(doc.querySelectorAll('table'));
+    var results = tables.map(function (t, i) {
+      var role = t.getAttribute('role');
+      var normalized = (role || '').toLowerCase();
+      var isPresentational = normalized === 'presentation' || normalized === 'none';
+      var hasCaption = !!t.querySelector('caption');
+      var ths = Array.prototype.slice.call(t.querySelectorAll('th'));
+      var withScope = ths.filter(function (th) { return th.hasAttribute('scope'); });
+      var isProperDataTable = hasCaption && ths.length > 0;
+      return {
+        index: i + 1,
+        role: role,
+        isPresentational: isPresentational,
+        hasCaption: hasCaption,
+        thCount: ths.length,
+        scopeCount: withScope.length,
+        ok: isPresentational || isProperDataTable
+      };
+    });
+    return { results: results };
+  }
+
+  function checkContrast(doc) {
+    var all = Array.prototype.slice.call(doc.querySelectorAll('*'));
+    var results = [];
+    all.forEach(function (node) {
+      if (!hasDirectText(node)) return;
+      var styleMap = parseInlineStyle(node.getAttribute('style'));
+      var colorVal = styleMap['color'];
+      if (!colorVal && node.tagName === 'FONT') colorVal = node.getAttribute('color');
+      if (!colorVal) return;
+      var fg = parseColor(colorVal);
+      if (!fg) return;
+      var bgInfo = findEffectiveBackground(node);
+      var ratio = contrastRatio(fg, bgInfo.color);
+      var fontSizePx = parseFontSizePx(styleMap['font-size']) || 16;
+      var bold = isBoldFor(node, styleMap);
+      var isLarge = fontSizePx >= 24 || (fontSizePx >= 18.66 && bold);
+      var threshold = isLarge ? 3 : 4.5;
+      var text = node.textContent.replace(/\s+/g, ' ').trim();
+      if (!text) return;
+      results.push({
+        text: text.length > 70 ? text.slice(0, 70) + '\u2026' : text,
+        fg: fg,
+        bg: bgInfo.color,
+        assumedBg: bgInfo.assumed,
+        ratio: ratio,
+        threshold: threshold,
+        pass: ratio >= threshold
+      });
+    });
+    return { results: results };
+  }
+
+  function checkDuplicateIds(doc) {
+    var withId = Array.prototype.slice.call(doc.querySelectorAll('[id]'));
+    var counts = {};
+    withId.forEach(function (node) {
+      var id = node.getAttribute('id');
+      if (!id) return;
+      counts[id] = (counts[id] || 0) + 1;
+    });
+    var duplicates = Object.keys(counts).filter(function (id) { return counts[id] > 1; }).map(function (id) {
+      return { id: id, count: counts[id] };
+    });
+    return { total: withId.length, duplicates: duplicates };
+  }
+
+  var GENERIC_ALT_WORDS = ['image', 'photo', 'picture', 'graphic', 'banner', 'spacer', 'icon', 'img', 'untitled', 'logo', 'click here'];
+  var REDUNDANT_ALT_PREFIXES = ['image of ', 'picture of ', 'photo of ', 'graphic of '];
+
+  function checkAltQuality(imagesData) {
+    var results = [];
+    var checked = 0;
+    imagesData.results.forEach(function (img) {
+      if (!img.hasAttr) return;
+      var alt = img.alt.trim();
+      if (!alt) return;
+      checked++;
+      var lower = alt.toLowerCase();
+      var flags = [];
+      if (/\.(jpe?g|png|gif|webp|svg|bmp)$/i.test(alt)) flags.push('Looks like a filename');
+      if (GENERIC_ALT_WORDS.indexOf(lower) !== -1) flags.push('Too generic');
+      REDUNDANT_ALT_PREFIXES.forEach(function (p) {
+        if (lower.indexOf(p) === 0) flags.push('Redundant phrase');
+      });
+      if (flags.length) results.push({ alt: alt, src: img.src, flags: flags });
+    });
+    return { results: results, checked: checked };
+  }
+
+  function runAllChecks(doc) {
+    var tables = checkTables(doc);
+    var images = checkImages(doc);
+    return {
+      headings: checkHeadings(doc),
+      links: checkLinks(doc),
+      images: images,
+      title: checkTitle(doc),
+      lang: checkLang(doc),
+      encoding: checkEncoding(doc),
+      tables: tables,
+      contrast: checkContrast(doc),
+      duplicateIds: checkDuplicateIds(doc),
+      altQuality: checkAltQuality(images)
+    };
+  }
+
+  function computeStatuses(report) {
+    var linkMissing = report.links.results.some(function (r) { return !r.hasName; });
+    var linkDup = report.links.results.some(function (r) { return r.hasName && !r.isUnique; });
+    var imageMissing = report.images.results.some(function (r) { return !r.hasAttr; });
+    return {
+      1: report.title.present ? 'pass' : 'fail',
+      2: report.lang.present ? 'pass' : 'fail',
+      3: report.encoding.present ? 'pass' : 'fail',
+      4: (!report.headings.present || !report.headings.logical) ? 'fail' : 'pass',
+      5: report.links.results.length === 0 ? 'na' : ((linkMissing || linkDup) ? 'fail' : 'pass'),
+      6: report.images.results.length === 0 ? 'na' : (imageMissing ? 'fail' : 'pass'),
+      7: report.altQuality.checked === 0 ? 'na' : (report.altQuality.results.length > 0 ? 'warn' : 'pass'),
+      8: report.tables.results.length === 0 ? 'na' : (report.tables.results.some(function (r) { return !r.ok; }) ? 'fail' : 'pass'),
+      9: report.contrast.results.length === 0 ? 'na' : (report.contrast.results.some(function (r) { return !r.pass; }) ? 'fail' : 'pass'),
+      10: report.duplicateIds.duplicates.length > 0 ? 'fail' : 'pass'
+    };
+  }
+
+  // ---------- rendering ----------
+
+  var LABELS = { pass: 'Pass', fail: 'Fail', warn: 'Needs review', na: 'Not tested' };
+
+  function badge(status) {
+    return el('span', { class: 'badge badge--' + status, text: LABELS[status] });
+  }
+
+  function cardHeader(num, status) {
+    var row = el('div', { class: 'test-card__header' });
+    var h2 = el('h2', { id: 'test-' + num + '-heading', text: 'Test ' + num + ': ' + TEST_NAMES[num] });
+    row.appendChild(h2);
+    row.appendChild(badge(status));
+    return row;
+  }
+
+  function renderHeadings(data, status) {
+    var section = el('section', { class: 'test-card', id: 'test-4', 'aria-labelledby': 'test-4-heading' });
+    section.appendChild(cardHeader(4, status));
+    var summary = !data.present
+      ? 'No headings were found in this email.'
+      : (data.logical ? 'Headings are present and appear in a logical order.' : 'Headings are present, but the order skips one or more levels.');
+    section.appendChild(el('p', { class: data.present ? 'test-summary' : 'fact-missing', text: summary }));
+    if (data.present) {
+      var list = el('ol', { class: 'result-list result-list--headings' });
+      data.results.forEach(function (r) {
+        var li = el('li', { class: r.skip ? 'result-item result-item--flag' : 'result-item' });
+        li.style.setProperty('--indent', r.level - 1);
+        if (r.skip) li.appendChild(el('span', { class: 'flag-badge', text: 'Skips a level' }));
+        li.appendChild(el('span', { class: 'result-tag', text: 'H' + r.level }));
+        li.appendChild(el('span', { class: 'result-text', text: r.text }));
+        list.appendChild(li);
+      });
+      section.appendChild(list);
+    }
+    return section;
+  }
+
+  function renderLinks(data, status) {
+    var section = el('section', { class: 'test-card', id: 'test-5', 'aria-labelledby': 'test-5-heading' });
+    section.appendChild(cardHeader(5, status));
+    section.appendChild(el('p', {
+      class: 'test-summary',
+      text: data.results.length === 0
+        ? 'No links were found in this email.'
+        : 'Each link should have an accessible name, and that name should be unique.'
+    }));
+    if (data.results.length) {
+      var list = el('ul', { class: 'result-list' });
+      data.results.forEach(function (r) {
+        var flagged = !r.hasName || !r.isUnique;
+        var li = el('li', { class: flagged ? 'result-item result-item--flag' : 'result-item' });
+        if (!r.hasName) li.appendChild(el('span', { class: 'flag-badge', text: 'No accessible name' }));
+        else if (!r.isUnique) li.appendChild(el('span', { class: 'flag-badge', text: 'Not unique' }));
+        li.appendChild(el('span', { class: 'result-text', text: r.hasName ? r.name : '(no accessible name)' }));
+        if (r.href) li.appendChild(el('span', { class: 'result-meta', text: r.href }));
+        list.appendChild(li);
+      });
+      section.appendChild(list);
+    }
+    return section;
+  }
+
+  function renderImages(data, status) {
+    var section = el('section', { class: 'test-card', id: 'test-6', 'aria-labelledby': 'test-6-heading' });
+    section.appendChild(cardHeader(6, status));
+    section.appendChild(el('p', {
+      class: 'test-summary',
+      text: data.results.length === 0
+        ? 'No images were found in this email.'
+        : 'Every image needs an alt attribute. Decorative images can use an empty alt.'
+    }));
+    if (data.results.length) {
+      var list = el('ul', { class: 'result-list' });
+      data.results.forEach(function (r) {
+        var li, text;
+        if (!r.hasAttr) {
+          li = el('li', { class: 'result-item result-item--flag' });
+          li.appendChild(el('span', { class: 'flag-badge', text: 'Missing alt attribute' }));
+          text = '(no alt attribute)';
+        } else if (!r.alt.trim()) {
+          li = el('li', { class: 'result-item result-item--decorative' });
+          li.appendChild(el('span', { class: 'badge-neutral', text: 'Decorative' }));
+          text = 'Empty alt (alt="")';
+        } else {
+          li = el('li', { class: 'result-item' });
+          text = 'Image: ' + r.alt;
+        }
+        li.appendChild(el('span', { class: 'result-text', text: text }));
+        if (r.src) li.appendChild(el('span', { class: 'result-meta', text: r.src }));
+        list.appendChild(li);
+      });
+      section.appendChild(list);
+    }
+    return section;
+  }
+
+  function renderFact(num, status, present, value, missingMessage) {
+    var section = el('section', { class: 'test-card', id: 'test-' + num, 'aria-labelledby': 'test-' + num + '-heading' });
+    section.appendChild(cardHeader(num, status));
+    if (present) {
+      section.appendChild(el('p', {}, el('span', { class: 'fact-value', text: value })));
+    } else {
+      section.appendChild(el('p', { class: 'fact-missing', text: missingMessage }));
+    }
+    return section;
+  }
+
+  function renderTables(data, status) {
+    var section = el('section', { class: 'test-card', id: 'test-8', 'aria-labelledby': 'test-8-heading' });
+    section.appendChild(cardHeader(8, status));
+    section.appendChild(el('p', {
+      class: 'test-summary',
+      text: data.results.length === 0 ? 'No tables were found in this email.' : (data.results.length === 1 ? '1 table was found.' : data.results.length + ' tables were found.')
+    }));
+    if (data.results.length) {
+      section.appendChild(el('p', {
+        class: 'test-note',
+        text: 'Every table should be one of two things: a layout table with role="presentation" (or role="none"), or a real data table with a <caption> and <th> header cells. A table that is neither is flagged below, decide which one it actually is and mark it up accordingly.'
+      }));
+      var list = el('ul', { class: 'result-list' });
+      data.results.forEach(function (r) {
+        var li = el('li', { class: r.ok ? 'result-item' : 'result-item result-item--flag' });
+        var text;
+        if (r.isPresentational) {
+          text = 'Layout table (role="' + r.role + '")';
+        } else if (r.ok) {
+          text = 'Data table, caption + ' + r.thCount + ' header cell' + (r.thCount === 1 ? '' : 's');
+          if (r.scopeCount === 0) li.appendChild(el('span', { class: 'badge-neutral', text: 'No scope attribute' }));
+        } else {
+          var missing = [];
+          if (!r.hasCaption) missing.push('caption');
+          if (r.thCount === 0) missing.push('header cells');
+          li.appendChild(el('span', { class: 'flag-badge', text: 'Neither layout nor data table' }));
+          text = 'Missing ' + missing.join(' and ') + '. Add role="presentation" if this is layout, or add the missing markup if it is real data.';
+        }
+        li.appendChild(el('span', { class: 'result-tag', text: 'Table ' + r.index }));
+        li.appendChild(el('span', { class: 'result-text', text: text }));
+        list.appendChild(li);
+      });
+      section.appendChild(list);
+    }
+    return section;
+  }
+
+  function renderContrast(data, status) {
+    var section = el('section', { class: 'test-card', id: 'test-9', 'aria-labelledby': 'test-9-heading' });
+    section.appendChild(cardHeader(9, status));
+    section.appendChild(el('p', {
+      class: 'test-summary',
+      text: data.results.length === 0
+        ? 'No text with a resolvable inline colour was found to check.'
+        : 'Checking text colour against its background using WCAG ratios: 4.5:1 for normal text, 3:1 for large or bold text.'
+    }));
+    if (data.results.length) {
+      section.appendChild(el('p', {
+        class: 'test-note',
+        text: 'Only inline color and background-color styles can be resolved here. Where no background is set anywhere up the tree, white is assumed and noted below.'
+      }));
+      var list = el('ul', { class: 'result-list' });
+      data.results.forEach(function (r) {
+        var li = el('li', { class: r.pass ? 'result-item' : 'result-item result-item--flag' });
+        if (!r.pass) li.appendChild(el('span', { class: 'flag-badge', text: 'Low contrast' }));
+        li.appendChild(el('span', {
+          class: 'contrast-swatch',
+          style: 'background:' + toHex(r.bg) + ';color:' + toHex(r.fg) + ';',
+          text: 'Aa'
+        }));
+        li.appendChild(el('span', { class: 'result-text', text: r.text }));
+        li.appendChild(el('span', {
+          class: 'result-meta',
+          text: r.ratio.toFixed(2) + ':1, needs ' + r.threshold + ':1' + (r.assumedBg ? ' (background assumed white)' : '')
+        }));
+        list.appendChild(li);
+      });
+      section.appendChild(list);
+    }
+    return section;
+  }
+
+  function renderDuplicateIds(data, status) {
+    var section = el('section', { class: 'test-card', id: 'test-10', 'aria-labelledby': 'test-10-heading' });
+    section.appendChild(cardHeader(10, status));
+    section.appendChild(el('p', {
+      class: 'test-summary',
+      text: data.total === 0
+        ? 'No id attributes were found in this email.'
+        : (data.duplicates.length === 0 ? 'Every id in this email is unique.' : 'Some id values are used more than once, which breaks aria-labelledby and anything else that references that id.')
+    }));
+    if (data.duplicates.length) {
+      var list = el('ul', { class: 'result-list' });
+      data.duplicates.forEach(function (d) {
+        var li = el('li', { class: 'result-item result-item--flag' });
+        li.appendChild(el('span', { class: 'flag-badge', text: 'Duplicate' }));
+        li.appendChild(el('span', { class: 'result-text', text: 'id="' + d.id + '"' }));
+        li.appendChild(el('span', { class: 'result-meta', text: 'used ' + d.count + ' times' }));
+        list.appendChild(li);
+      });
+      section.appendChild(list);
+    }
+    return section;
+  }
+
+  function renderAltQuality(data, status) {
+    var section = el('section', { class: 'test-card', id: 'test-7', 'aria-labelledby': 'test-7-heading' });
+    section.appendChild(cardHeader(7, status));
+    section.appendChild(el('p', {
+      class: 'test-summary',
+      text: data.checked === 0
+        ? 'No images with alt text to check.'
+        : (data.results.length === 0 ? 'No obviously low quality alt text found.' : 'Some alt text looks like a filename, a generic placeholder, or a redundant phrase. These are worth a second look, not automatic failures.')
+    }));
+    if (data.results.length) {
+      var list = el('ul', { class: 'result-list' });
+      data.results.forEach(function (r) {
+        var li = el('li', { class: 'result-item result-item--decorative' });
+        r.flags.forEach(function (f) { li.appendChild(el('span', { class: 'badge-neutral', text: f })); });
+        li.appendChild(el('span', { class: 'result-text', text: 'Alt: "' + r.alt + '"' }));
+        if (r.src) li.appendChild(el('span', { class: 'result-meta', text: r.src }));
+        list.appendChild(li);
+      });
+      section.appendChild(list);
+    }
+    return section;
+  }
+
+  function renderReport(report) {
+    var statuses = computeStatuses(report);
+
+    var summaryEl = document.getElementById('summary-tickets');
+    summaryEl.innerHTML = '';
+    Object.keys(TEST_NAMES).forEach(function (num) {
+      var a = el('a', { class: 'ticket', href: '#test-' + num });
+      a.appendChild(badge(statuses[num]));
+      a.appendChild(el('span', { class: 'ticket-name', text: TEST_NAMES[num] }));
+      var li = el('li', {});
+      li.appendChild(a);
+      summaryEl.appendChild(li);
+    });
+
+    var body = document.getElementById('results-body');
+    body.innerHTML = '';
+    body.appendChild(renderFact(1, statuses[1], report.title.present, report.title.value, 'No document title present.'));
+    body.appendChild(renderFact(2, statuses[2], report.lang.present, report.lang.value, 'No document language present.'));
+    body.appendChild(renderFact(3, statuses[3], report.encoding.present, report.encoding.value, 'No document encoding present.'));
+    body.appendChild(renderHeadings(report.headings, statuses[4]));
+    body.appendChild(renderLinks(report.links, statuses[5]));
+    body.appendChild(renderImages(report.images, statuses[6]));
+    body.appendChild(renderAltQuality(report.altQuality, statuses[7]));
+    body.appendChild(renderTables(report.tables, statuses[8]));
+    body.appendChild(renderContrast(report.contrast, statuses[9]));
+    body.appendChild(renderDuplicateIds(report.duplicateIds, statuses[10]));
+  }
+
+  // ---------- wiring ----------
+
+  var pasteScreen = document.getElementById('paste-screen');
+  var resultsScreen = document.getElementById('results-screen');
+  var textarea = document.getElementById('html-input');
+  var runBtn = document.getElementById('run-btn');
+  var sampleBtn = document.getElementById('sample-btn');
+  var startOverBtn = document.getElementById('start-over-btn');
+  var errorMsg = document.getElementById('input-error');
+  var resultsHeading = document.getElementById('results-heading');
+  var statusRegion = document.getElementById('status-region');
+
+  runBtn.addEventListener('click', function () {
+    var html = textarea.value;
+    if (!html.trim()) {
+      errorMsg.textContent = 'Paste some HTML before running the checks.';
+      textarea.setAttribute('aria-invalid', 'true');
+      textarea.focus();
+      return;
+    }
+    errorMsg.textContent = '';
+    textarea.removeAttribute('aria-invalid');
+
+    var doc = new DOMParser().parseFromString(html, 'text/html');
+    var report = runAllChecks(doc);
+    renderReport(report);
+
+    pasteScreen.hidden = true;
+    resultsScreen.hidden = false;
+    resultsHeading.focus();
+    statusRegion.textContent = 'Accessibility check complete. Results below.';
+  });
+
+  sampleBtn.addEventListener('click', function () {
+    textarea.value = SAMPLE_HTML;
+    errorMsg.textContent = '';
+    textarea.removeAttribute('aria-invalid');
+    textarea.focus();
+  });
+
+  startOverBtn.addEventListener('click', function () {
+    textarea.value = '';
+    errorMsg.textContent = '';
+    textarea.removeAttribute('aria-invalid');
+    resultsScreen.hidden = true;
+    pasteScreen.hidden = false;
+    statusRegion.textContent = '';
+    textarea.focus();
+  });
+})();
+</script>
+</body>
+</html>

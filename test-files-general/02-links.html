@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Link accessible names</title>
+</head>
+<body>
+<h1>Link accessible names</h1>
+
+<h2>Name from aria-labelledby</h2>
+<span id="report-label">Quarterly report</span>
+<p><a href="https://example.com/report" aria-labelledby="report-label">Click here</a></p>
+
+<h2>Name from aria-label</h2>
+<p><a href="https://example.com/twitter" aria-label="Follow us on Twitter"><img src="twitter-icon.png" alt=""></a></p>
+
+<h2>Name from content</h2>
+<p><a href="https://example.com/about">About us</a></p>
+
+<h2>No accessible name</h2>
+<p><a href="https://example.com/mystery"><img src="spacer.png" alt=""></a></p>
+
+<h2>Duplicate accessible name</h2>
+<p>Two different destinations, same link text.</p>
+<p><a href="https://example.com/product-a">Learn more</a></p>
+<p><a href="https://example.com/product-b">Learn more</a></p>
+
+</body>
+</html>

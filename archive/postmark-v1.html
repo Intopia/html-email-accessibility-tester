@@ -1,0 +1,879 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Postmark — HTML email accessibility checker</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root {
+  --ink: #16233d;
+  --ink-soft: #4a5875;
+  --paper: #f2efe6;
+  --panel: #fbfaf5;
+  --line: #d9d2be;
+  --red: #a5322a;
+  --red-bg: #fbeae7;
+  --green: #29614a;
+  --green-bg: #e9f2ec;
+  --amber: #93641a;
+  --amber-bg: #faf1dc;
+  --neutral: #5b6472;
+  --neutral-bg: #eceae1;
+  --info: #29506b;
+  --info-bg: #e6eef3;
+  --focus: #1b4fbf;
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'IBM Plex Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+  --radius: 4px;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  line-height: 1.5;
+}
+
+a { color: var(--info); }
+
+:focus { outline: 3px solid var(--focus); outline-offset: 2px; }
+:focus:not(:focus-visible) { outline: none; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+.wrap {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 24px 96px;
+}
+
+/* header */
+
+.site-header {
+  border-bottom: 3px solid var(--ink);
+  padding: 40px 0 24px;
+  margin-bottom: 40px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand svg { flex: none; }
+
+.brand-text h1 {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.brand-text p {
+  margin: 4px 0 0;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+/* paste screen */
+
+.field-label {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.05rem;
+  margin-bottom: 8px;
+}
+
+.field-hint {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  margin: 0 0 12px;
+}
+
+textarea#html-input {
+  width: 100%;
+  min-height: 320px;
+  padding: 16px;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  color: var(--ink);
+  background: var(--panel);
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  resize: vertical;
+}
+
+textarea#html-input[aria-invalid="true"] {
+  border-color: var(--red);
+}
+
+#input-error {
+  color: var(--red);
+  font-weight: 600;
+  font-size: 0.9rem;
+  min-height: 1.2em;
+  margin: 10px 0 0;
+}
+
+.button-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+button {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  border-radius: var(--radius);
+  padding: 12px 22px;
+}
+
+.btn-primary {
+  background: var(--ink);
+  color: var(--paper);
+  border: 2px solid var(--ink);
+}
+.btn-primary:hover { background: #223257; }
+
+.btn-secondary {
+  background: transparent;
+  color: var(--ink);
+  border: 2px dashed var(--ink-soft);
+}
+.btn-secondary:hover { background: var(--panel); }
+
+/* summary tickets */
+
+.summary {
+  background: var(--panel);
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 40px;
+}
+
+.summary h2 {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  margin: 0 0 16px;
+}
+
+.ticket-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 12px;
+}
+
+.ticket {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  text-decoration: none;
+  color: var(--ink);
+  padding: 12px 8px;
+  border-radius: var(--radius);
+}
+.ticket:hover { background: var(--paper); }
+
+.ticket-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* stamps */
+
+.stamp {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 3px double currentColor;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  transform: rotate(var(--tilt, -3deg));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .stamp { transition: transform 0.15s ease; }
+}
+
+.stamp__glyph { font-size: 1.4rem; line-height: 1; }
+.stamp__label { font-size: 0.55rem; letter-spacing: 0.08em; margin-top: 2px; }
+
+.stamp--pass { color: var(--green); }
+.stamp--fail { color: var(--red); }
+.stamp--warn { color: var(--amber); }
+.stamp--na   { color: var(--neutral); }
+.stamp--info { color: var(--info); }
+
+.ticket:nth-child(1) .stamp { --tilt: -4deg; }
+.ticket:nth-child(2) .stamp { --tilt: 3deg; }
+.ticket:nth-child(3) .stamp { --tilt: -2deg; }
+.ticket:nth-child(4) .stamp { --tilt: 4deg; }
+.ticket:nth-child(5) .stamp { --tilt: -3deg; }
+.ticket:nth-child(6) .stamp { --tilt: 2deg; }
+.ticket:nth-child(7) .stamp { --tilt: -5deg; }
+
+/* test cards */
+
+.test-card {
+  background: var(--panel);
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 24px;
+  scroll-margin-top: 24px;
+}
+
+.test-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.test-card__header h2 {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.test-num {
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 2px 6px;
+  font-family: var(--font-mono);
+}
+
+.test-card .stamp {
+  width: 52px;
+  height: 52px;
+  flex: none;
+}
+.test-card .stamp__glyph { font-size: 1rem; }
+.test-card .stamp__label { font-size: 0.45rem; }
+
+.test-summary {
+  margin: 0 0 16px;
+  color: var(--ink-soft);
+}
+
+.test-note {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  background: var(--info-bg);
+  border-left: 3px solid var(--info);
+  border-radius: 2px;
+  font-size: 0.88rem;
+  color: var(--ink);
+}
+
+/* result lists */
+
+.result-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.result-item {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--line);
+  border-radius: 2px;
+  background: var(--paper);
+  font-size: 0.92rem;
+}
+
+.result-item--flag {
+  border-left-color: var(--red);
+  background: var(--red-bg);
+}
+
+.result-item--decorative {
+  border-left-color: var(--neutral);
+}
+
+.result-list--headings .result-item {
+  margin-left: calc(var(--indent, 0) * 20px);
+}
+
+.result-tag {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  padding: 1px 6px;
+}
+
+.result-text {
+  flex: 1;
+  min-width: 120px;
+  word-break: break-word;
+}
+
+.result-meta {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  word-break: break-all;
+}
+
+.flag-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #fff;
+  background: var(--red);
+  border-radius: 2px;
+  padding: 2px 6px;
+}
+
+.badge-neutral {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--neutral);
+  background: var(--neutral-bg);
+  border-radius: 2px;
+  padding: 2px 6px;
+}
+
+.fact-value {
+  font-family: var(--font-mono);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  padding: 8px 12px;
+  display: inline-block;
+}
+
+.fact-missing {
+  color: var(--red);
+  font-weight: 600;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0; border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+footer.site-footer {
+  border-top: 2px solid var(--line);
+  padding-top: 20px;
+  margin-top: 40px;
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="site-header">
+    <div class="brand">
+      <svg width="44" height="44" viewBox="0 0 44 44" fill="none" aria-hidden="true">
+        <rect x="2" y="8" width="40" height="28" rx="2" stroke="#16233d" stroke-width="2.5" fill="#fbfaf5"/>
+        <path d="M4 10L22 25L40 10" stroke="#16233d" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="34" cy="30" r="8" fill="none" stroke="#a5322a" stroke-width="2"/>
+        <path d="M30.5 30l2.5 2.5 5-5" stroke="#a5322a" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="brand-text">
+        <h1>Postmark</h1>
+        <p>Paste HTML email markup and get it stamped for accessibility issues.</p>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <div role="status" aria-live="polite" class="visually-hidden" id="status-region"></div>
+
+    <section id="paste-screen">
+      <label class="field-label" for="html-input">Email HTML markup</label>
+      <p class="field-hint">Paste the full HTML source of your email, including the <code>&lt;html&gt;</code> and <code>&lt;head&gt;</code>, so title, language and encoding can be checked too.</p>
+      <textarea id="html-input" spellcheck="false" aria-describedby="input-error"></textarea>
+      <p id="input-error" role="alert"></p>
+      <div class="button-row">
+        <button type="button" class="btn-primary" id="run-btn">Run accessibility checks</button>
+        <button type="button" class="btn-secondary" id="sample-btn">Load a sample email</button>
+      </div>
+    </section>
+
+    <section id="results-screen" hidden>
+      <h2 class="visually-hidden" id="results-heading" tabindex="-1">Results</h2>
+
+      <div class="summary">
+        <h2>Summary</h2>
+        <div class="ticket-grid" id="summary-tickets"></div>
+      </div>
+
+      <div id="results-body"></div>
+
+      <div class="button-row">
+        <button type="button" class="btn-secondary" id="start-over-btn">Start over</button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>Postmark runs entirely in your browser. Nothing you paste is sent anywhere.</p>
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var TEST_NAMES = {
+    1: 'Headings',
+    2: 'Links',
+    3: 'Images',
+    4: 'Document title',
+    5: 'Document language',
+    6: 'Document encoding',
+    7: 'Tables'
+  };
+
+  var SAMPLE_HTML = '<!DOCTYPE html>\n<html>\n<head>\n<meta charset="UTF-8">\n</head>\n<body>\n' +
+    '<h1>Weekly digest</h1>\n' +
+    '<h4>This week in accessibility</h4>\n' +
+    '<h5>Top story</h5>\n' +
+    '<table role="presentation" width="600">\n<tr><td>\n' +
+    '<img src="hero.jpg" width="600">\n' +
+    '<p>Read on for this week\'s roundup.</p>\n' +
+    '<a href="https://example.com/article-1">Read more</a>\n' +
+    '<a href="https://example.com/article-2">Read more</a>\n' +
+    '<img src="divider.png" alt="">\n' +
+    '<h2>Upcoming events</h2>\n' +
+    '<table>\n<tr><th>Date</th><th>Event</th></tr>\n<tr><td>12 Aug</td><td>Webinar</td></tr>\n</table>\n' +
+    '<a href="https://example.com/unsubscribe" aria-label="Unsubscribe from this newsletter"><img src="footer-link.png" alt=""></a>\n' +
+    '</td></tr>\n</table>\n' +
+    '</body>\n</html>';
+
+  // ---------- DOM helper ----------
+
+  function el(tag, attrs, children) {
+    var node = document.createElement(tag);
+    attrs = attrs || {};
+    Object.keys(attrs).forEach(function (k) {
+      var v = attrs[k];
+      if (v == null) return;
+      if (k === 'class') node.className = v;
+      else if (k === 'text') node.textContent = v;
+      else node.setAttribute(k, v);
+    });
+    if (children) {
+      (Array.isArray(children) ? children : [children]).forEach(function (c) {
+        if (c == null) return;
+        node.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+      });
+    }
+    return node;
+  }
+
+  // ---------- accessible name ----------
+
+  function textWithImgAlt(node) {
+    var result = '';
+    node.childNodes.forEach(function (child) {
+      if (child.nodeType === 3) {
+        result += child.textContent;
+      } else if (child.nodeType === 1) {
+        if (child.tagName === 'IMG') {
+          result += child.getAttribute('alt') || '';
+        } else {
+          result += textWithImgAlt(child);
+        }
+      }
+    });
+    return result;
+  }
+
+  function getAccessibleName(node, doc) {
+    var labelledby = node.getAttribute('aria-labelledby');
+    if (labelledby) {
+      var text = labelledby.split(/\s+/).map(function (id) {
+        var ref = doc.getElementById(id);
+        return ref ? ref.textContent.trim() : '';
+      }).filter(Boolean).join(' ').trim();
+      if (text) return text;
+    }
+    var ariaLabel = node.getAttribute('aria-label');
+    if (ariaLabel && ariaLabel.trim()) return ariaLabel.trim();
+    var content = textWithImgAlt(node).replace(/\s+/g, ' ').trim();
+    if (content) return content;
+    var title = node.getAttribute('title');
+    if (title && title.trim()) return title.trim();
+    return '';
+  }
+
+  // ---------- checks ----------
+
+  function checkHeadings(doc) {
+    var headings = Array.prototype.slice.call(doc.querySelectorAll('h1,h2,h3,h4,h5,h6'));
+    var prevLevel = 0;
+    var results = headings.map(function (h) {
+      var level = parseInt(h.tagName.charAt(1), 10);
+      var text = h.textContent.trim() || '(empty heading)';
+      var skip = prevLevel > 0 && level > prevLevel + 1;
+      prevLevel = level;
+      return { level: level, text: text, skip: skip };
+    });
+    return {
+      present: headings.length > 0,
+      logical: headings.length > 0 && !results.some(function (r) { return r.skip; }),
+      results: results
+    };
+  }
+
+  function checkLinks(doc) {
+    var anchors = Array.prototype.slice.call(doc.querySelectorAll('a[href]'));
+    var names = anchors.map(function (a) { return getAccessibleName(a, doc); });
+    var counts = {};
+    names.forEach(function (n) {
+      var key = n.trim().toLowerCase();
+      if (!key) return;
+      counts[key] = (counts[key] || 0) + 1;
+    });
+    var results = anchors.map(function (a, i) {
+      var name = names[i].trim();
+      var hasName = name.length > 0;
+      var key = name.toLowerCase();
+      var isUnique = hasName ? counts[key] === 1 : true;
+      return { name: name, hasName: hasName, isUnique: isUnique, href: a.getAttribute('href') };
+    });
+    return { results: results };
+  }
+
+  function checkImages(doc) {
+    var imgs = Array.prototype.slice.call(doc.querySelectorAll('img'));
+    var results = imgs.map(function (img) {
+      return {
+        hasAttr: img.hasAttribute('alt'),
+        alt: img.getAttribute('alt') || '',
+        src: img.getAttribute('src') || ''
+      };
+    });
+    return { results: results };
+  }
+
+  function checkTitle(doc) {
+    var t = doc.querySelector('title');
+    var text = t ? t.textContent.trim() : '';
+    return { present: !!text, value: text };
+  }
+
+  function checkLang(doc) {
+    var lang = doc.documentElement.getAttribute('lang');
+    return { present: !!(lang && lang.trim()), value: lang };
+  }
+
+  function checkEncoding(doc) {
+    var metaCharset = doc.querySelector('meta[charset]');
+    if (metaCharset) return { present: true, value: metaCharset.getAttribute('charset') };
+    var metaEquiv = Array.prototype.slice.call(doc.querySelectorAll('meta[http-equiv]'))
+      .find(function (m) { return (m.getAttribute('http-equiv') || '').toLowerCase() === 'content-type'; });
+    if (metaEquiv) {
+      var content = metaEquiv.getAttribute('content') || '';
+      var match = content.match(/charset=([^;]+)/i);
+      if (match) return { present: true, value: match[1].trim() };
+    }
+    return { present: false, value: null };
+  }
+
+  function checkTables(doc) {
+    var tables = Array.prototype.slice.call(doc.querySelectorAll('table'));
+    var results = tables.map(function (t, i) {
+      var role = t.getAttribute('role');
+      var normalized = (role || '').toLowerCase();
+      return { index: i + 1, role: role, isPresentational: normalized === 'presentation' || normalized === 'none' };
+    });
+    return { results: results };
+  }
+
+  function runAllChecks(doc) {
+    return {
+      headings: checkHeadings(doc),
+      links: checkLinks(doc),
+      images: checkImages(doc),
+      title: checkTitle(doc),
+      lang: checkLang(doc),
+      encoding: checkEncoding(doc),
+      tables: checkTables(doc)
+    };
+  }
+
+  function computeStatuses(report) {
+    var linkMissing = report.links.results.some(function (r) { return !r.hasName; });
+    var linkDup = report.links.results.some(function (r) { return r.hasName && !r.isUnique; });
+    var imageMissing = report.images.results.some(function (r) { return !r.hasAttr; });
+    return {
+      1: !report.headings.present ? 'warn' : (report.headings.logical ? 'pass' : 'fail'),
+      2: report.links.results.length === 0 ? 'na' : ((linkMissing || linkDup) ? 'fail' : 'pass'),
+      3: report.images.results.length === 0 ? 'na' : (imageMissing ? 'fail' : 'pass'),
+      4: report.title.present ? 'pass' : 'fail',
+      5: report.lang.present ? 'pass' : 'fail',
+      6: report.encoding.present ? 'pass' : 'fail',
+      7: report.tables.results.length === 0 ? 'na' : 'info'
+    };
+  }
+
+  // ---------- rendering ----------
+
+  var GLYPHS = { pass: '\u2713', fail: '\u2715', warn: '!', na: '\u2013', info: 'i' };
+  var LABELS = { pass: 'Pass', fail: 'Fail', warn: 'Warning', na: 'N/A', info: 'Info' };
+
+  function stamp(status) {
+    var s = el('div', { class: 'stamp stamp--' + status });
+    s.appendChild(el('span', { class: 'stamp__glyph', 'aria-hidden': 'true', text: GLYPHS[status] }));
+    s.appendChild(el('span', { class: 'stamp__label', text: LABELS[status] }));
+    return s;
+  }
+
+  function cardHeader(num, status) {
+    var row = el('div', { class: 'test-card__header' });
+    var h2 = el('h2', { id: 'test-' + num + '-heading' }, [
+      el('span', { class: 'test-num', text: 'Test ' + num }),
+      TEST_NAMES[num]
+    ]);
+    row.appendChild(h2);
+    row.appendChild(stamp(status));
+    return row;
+  }
+
+  function renderHeadings(data, status) {
+    var section = el('section', { class: 'test-card', id: 'test-1', 'aria-labelledby': 'test-1-heading' });
+    section.appendChild(cardHeader(1, status));
+    var summary = !data.present
+      ? 'No headings were found in this email.'
+      : (data.logical ? 'Headings are present and appear in a logical order.' : 'Headings are present, but the order skips one or more levels.');
+    section.appendChild(el('p', { class: 'test-summary', text: summary }));
+    if (data.present) {
+      var list = el('ol', { class: 'result-list result-list--headings' });
+      data.results.forEach(function (r) {
+        var li = el('li', { class: r.skip ? 'result-item result-item--flag' : 'result-item' });
+        li.style.setProperty('--indent', r.level - 1);
+        if (r.skip) li.appendChild(el('span', { class: 'flag-badge', text: 'Skips a level' }));
+        li.appendChild(el('span', { class: 'result-tag', text: 'H' + r.level }));
+        li.appendChild(el('span', { class: 'result-text', text: r.text }));
+        list.appendChild(li);
+      });
+      section.appendChild(list);
+    }
+    return section;
+  }
+
+  function renderLinks(data, status) {
+    var section = el('section', { class: 'test-card', id: 'test-2', 'aria-labelledby': 'test-2-heading' });
+    section.appendChild(cardHeader(2, status));
+    section.appendChild(el('p', {
+      class: 'test-summary',
+      text: data.results.length === 0
+        ? 'No links were found in this email.'
+        : 'Each link should have an accessible name, and that name should be unique.'
+    }));
+    if (data.results.length) {
+      var list = el('ul', { class: 'result-list' });
+      data.results.forEach(function (r) {
+        var flagged = !r.hasName || !r.isUnique;
+        var li = el('li', { class: flagged ? 'result-item result-item--flag' : 'result-item' });
+        if (!r.hasName) li.appendChild(el('span', { class: 'flag-badge', text: 'No accessible name' }));
+        else if (!r.isUnique) li.appendChild(el('span', { class: 'flag-badge', text: 'Not unique' }));
+        li.appendChild(el('span', { class: 'result-text', text: r.hasName ? r.name : '(no accessible name)' }));
+        if (r.href) li.appendChild(el('span', { class: 'result-meta', text: r.href }));
+        list.appendChild(li);
+      });
+      section.appendChild(list);
+    }
+    return section;
+  }
+
+  function renderImages(data, status) {
+    var section = el('section', { class: 'test-card', id: 'test-3', 'aria-labelledby': 'test-3-heading' });
+    section.appendChild(cardHeader(3, status));
+    section.appendChild(el('p', {
+      class: 'test-summary',
+      text: data.results.length === 0
+        ? 'No images were found in this email.'
+        : 'Every image needs an alt attribute. Decorative images can use an empty alt.'
+    }));
+    if (data.results.length) {
+      var list = el('ul', { class: 'result-list' });
+      data.results.forEach(function (r) {
+        var li, text;
+        if (!r.hasAttr) {
+          li = el('li', { class: 'result-item result-item--flag' });
+          li.appendChild(el('span', { class: 'flag-badge', text: 'Missing alt attribute' }));
+          text = '(no alt attribute)';
+        } else if (!r.alt.trim()) {
+          li = el('li', { class: 'result-item result-item--decorative' });
+          li.appendChild(el('span', { class: 'badge-neutral', text: 'Decorative' }));
+          text = 'Empty alt (alt="")';
+        } else {
+          li = el('li', { class: 'result-item' });
+          text = 'Image: ' + r.alt;
+        }
+        li.appendChild(el('span', { class: 'result-text', text: text }));
+        if (r.src) li.appendChild(el('span', { class: 'result-meta', text: r.src }));
+        list.appendChild(li);
+      });
+      section.appendChild(list);
+    }
+    return section;
+  }
+
+  function renderFact(num, status, present, value, missingMessage) {
+    var section = el('section', { class: 'test-card', id: 'test-' + num, 'aria-labelledby': 'test-' + num + '-heading' });
+    section.appendChild(cardHeader(num, status));
+    if (present) {
+      section.appendChild(el('p', {}, el('span', { class: 'fact-value', text: value })));
+    } else {
+      section.appendChild(el('p', { class: 'fact-missing', text: missingMessage }));
+    }
+    return section;
+  }
+
+  function renderTables(data, status) {
+    var section = el('section', { class: 'test-card', id: 'test-7', 'aria-labelledby': 'test-7-heading' });
+    section.appendChild(cardHeader(7, status));
+    section.appendChild(el('p', {
+      class: 'test-summary',
+      text: data.results.length === 0 ? 'No tables were found in this email.' : (data.results.length === 1 ? '1 table was found.' : data.results.length + ' tables were found.')
+    }));
+    if (data.results.length) {
+      section.appendChild(el('p', {
+        class: 'test-note',
+        text: 'A role of presentation or none on a layout table is usually correct practice, it hides the table structure from assistive tech. It is listed here for reference, not flagged as an error.'
+      }));
+      var list = el('ul', { class: 'result-list' });
+      data.results.forEach(function (r) {
+        var li = el('li', { class: 'result-item' });
+        li.appendChild(el('span', { class: 'result-tag', text: 'Table ' + r.index }));
+        li.appendChild(el('span', {
+          class: 'result-text',
+          text: r.isPresentational ? 'Layout table (role="' + r.role + '")' : (r.role ? 'role="' + r.role + '"' : 'No role attribute (data table semantics kept)')
+        }));
+        list.appendChild(li);
+      });
+      section.appendChild(list);
+    }
+    return section;
+  }
+
+  function renderReport(report) {
+    var statuses = computeStatuses(report);
+
+    var summaryEl = document.getElementById('summary-tickets');
+    summaryEl.innerHTML = '';
+    Object.keys(TEST_NAMES).forEach(function (num) {
+      var a = el('a', { class: 'ticket', href: '#test-' + num });
+      a.appendChild(stamp(statuses[num]));
+      a.appendChild(el('span', { class: 'ticket-name', text: TEST_NAMES[num] }));
+      summaryEl.appendChild(a);
+    });
+
+    var body = document.getElementById('results-body');
+    body.innerHTML = '';
+    body.appendChild(renderHeadings(report.headings, statuses[1]));
+    body.appendChild(renderLinks(report.links, statuses[2]));
+    body.appendChild(renderImages(report.images, statuses[3]));
+    body.appendChild(renderFact(4, statuses[4], report.title.present, report.title.value, 'No document title present.'));
+    body.appendChild(renderFact(5, statuses[5], report.lang.present, report.lang.value, 'No document language present.'));
+    body.appendChild(renderFact(6, statuses[6], report.encoding.present, report.encoding.value, 'No document encoding present.'));
+    body.appendChild(renderTables(report.tables, statuses[7]));
+  }
+
+  // ---------- wiring ----------
+
+  var pasteScreen = document.getElementById('paste-screen');
+  var resultsScreen = document.getElementById('results-screen');
+  var textarea = document.getElementById('html-input');
+  var runBtn = document.getElementById('run-btn');
+  var sampleBtn = document.getElementById('sample-btn');
+  var startOverBtn = document.getElementById('start-over-btn');
+  var errorMsg = document.getElementById('input-error');
+  var resultsHeading = document.getElementById('results-heading');
+  var statusRegion = document.getElementById('status-region');
+
+  runBtn.addEventListener('click', function () {
+    var html = textarea.value;
+    if (!html.trim()) {
+      errorMsg.textContent = 'Paste some HTML before running the checks.';
+      textarea.setAttribute('aria-invalid', 'true');
+      textarea.focus();
+      return;
+    }
+    errorMsg.textContent = '';
+    textarea.removeAttribute('aria-invalid');
+
+    var doc = new DOMParser().parseFromString(html, 'text/html');
+    var report = runAllChecks(doc);
+    renderReport(report);
+
+    pasteScreen.hidden = true;
+    resultsScreen.hidden = false;
+    resultsHeading.focus();
+    statusRegion.textContent = 'Accessibility check complete. Results below.';
+  });
+
+  sampleBtn.addEventListener('click', function () {
+    textarea.value = SAMPLE_HTML;
+    errorMsg.textContent = '';
+    textarea.removeAttribute('aria-invalid');
+    textarea.focus();
+  });
+
+  startOverBtn.addEventListener('click', function () {
+    resultsScreen.hidden = true;
+    pasteScreen.hidden = false;
+    statusRegion.textContent = '';
+    textarea.focus();
+  });
+})();
+</script>
+</body>
+</html>
