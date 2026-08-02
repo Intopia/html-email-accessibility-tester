@@ -2,13 +2,11 @@
 
 A free, single-page tool for checking the accessibility of HTML email markup. Paste your email's HTML, or upload an `.html` file, and get a plain-language accessibility report back instantly.
 
-Built to replace [accessible-email.org](https://www.accessible-email.org/) for use in Intopia's accessibility training, which was prone to downtime and had a dated, hard-to-use interface.
-
 ## Try it
 
-Open `index.html` in any browser. That's it, no install, no build step, no server.
+Open [HTML email accessibility tester](https://intopia.github.io/html-email-accessibility-tester/) in any browser. 
 
-*(If hosting via GitHub Pages, link goes here.)*
+That's it, no install, no build step, no server.
 
 ## How it works
 
@@ -47,4 +45,4 @@ This is an early, public release. Issues and suggestions welcome, this tool exis
 
 ## Author
 
-Built by [Russ Weakley](https://maxdesign.com.au) / [Intopia](https://intopia.digital) for the "Testing web accessibility for teams" course.
+Built by [Russ Weakley](https://maxdesign.com.au) / [Intopia](https://intopia.digital)
