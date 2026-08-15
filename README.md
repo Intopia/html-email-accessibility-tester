@@ -2,12 +2,19 @@
 
 A free, single-page tool for checking the accessibility of HTML email markup. Paste your email's HTML, or upload an `.html` file, and get a plain-language accessibility report back instantly.
 
+## Try it
+
+Open `index.html` in any browser. That's it, no install, no build step, no server.
+
+*(If hosting via GitHub Pages, link goes here.)*
+
 ## How it works
 
-- Open [HTML email accessibility tester](https://intopia.github.io/html-email-accessibility-tester/) in any browser. 
 - Paste HTML, or upload a `.html` file (read locally in the browser via the File API)
 - Click **Run accessibility tests**
 - Get a summary of 10 tests, each with a Pass / Fail / Needs review / Not tested badge, plus a detailed breakdown underneath
+
+**Nothing you paste or upload is sent anywhere.** The whole tool is a single HTML file with inline CSS and JavaScript, everything runs client-side in your own browser.
 
 ## What it tests
 
@@ -24,17 +31,15 @@ A free, single-page tool for checking the accessibility of HTML email markup. Pa
 
 Each test is a concrete, deterministic check, not a subjective quality score, so results are consistent and explainable.
 
-## Security
+## Test files
 
-**Nothing you paste or upload is sent anywhere.** The whole tool is a single HTML file with inline CSS and JavaScript, everything runs client-side in your own browser.
+The `test-files/` and `landmark-test-files/` folders contain small, single-purpose HTML files, each one built to trigger exactly one pass or fail state. Useful for demoing the tool, or for verifying a change hasn't broken a specific test.
 
 ## Tech
 
 Vanilla HTML, CSS and JavaScript. No frameworks, no dependencies, no build tooling.
 
-## Test files
-
-The `test-files-general/` and `test-files-landmark/` folders contain small, single-purpose HTML files, each one built to trigger exactly one pass or fail state. Useful for demoing the tool, or for verifying a change hasn't broken a specific test.
+Curious exactly how each test decides pass or fail, and what happens step by step when you click Run? See [how-it-works.md](how-it-works.md).
 
 ## Feedback
 
@@ -42,4 +47,4 @@ This is an early, public release. Issues and suggestions welcome, this tool exis
 
 ## Author
 
-Built by [Russ Weakley](https://maxdesign.com.au) / [Intopia](https://intopia.digital)
+Built by [Russ Weakley](https://maxdesign.com.au) / [Intopia](https://intopia.digital) for the "Testing web accessibility for teams" course.
