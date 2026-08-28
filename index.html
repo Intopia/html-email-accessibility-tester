@@ -1006,6 +1006,11 @@ button {
       : (data.logical ? 'Headings are present and appear in a logical order.' : 'Headings are present, but the order skips one or more levels.');
     section.appendChild(el('p', { class: data.present ? 'test-summary' : 'fact-missing', text: summary }));
     if (data.present) {
+      section.appendChild(el('p', { class: 'test-note' }, [
+        'This test confirms headings are present and don\u2019t skip levels. It can\u2019t judge whether heading text is meaningful or whether levels reflect the content\u2019s structure, and it can\u2019t detect visual text that should be a heading but isn\u2019t marked up as one. All of this needs ',
+        el('strong', { text: 'manual review' }),
+        '.'
+      ]));
       var list = el('ol', { class: 'result-list result-list--headings' });
       data.results.forEach(function (r) {
         var li = el('li', { class: r.skip ? 'result-item result-item--flag' : 'result-item' });
@@ -1030,6 +1035,11 @@ button {
         : 'Each link should have an accessible name, and that name should be unique.'
     }));
     if (data.results.length) {
+      section.appendChild(el('p', { class: 'test-note' }, [
+        'This test confirms a link has an accessible name and that the name is unique. It can\u2019t judge whether that name is genuinely meaningful, that needs ',
+        el('strong', { text: 'manual review' }),
+        '.'
+      ]));
       var list = el('ul', { class: 'result-list' });
       data.results.forEach(function (r) {
         var flagged = !r.hasName || !r.isUnique;
@@ -1055,6 +1065,11 @@ button {
         : 'Every image needs an alt attribute. Decorative images can use an empty alt.'
     }));
     if (data.results.length) {
+      section.appendChild(el('p', { class: 'test-note' }, [
+        'This test confirms alt text is present. It can\u2019t judge whether that text is meaningful or accurate, that needs ',
+        el('strong', { text: 'manual review' }),
+        '.'
+      ]));
       var list = el('ul', { class: 'result-list' });
       data.results.forEach(function (r) {
         var li, text;
@@ -1137,10 +1152,11 @@ button {
         : 'Checking landmark roles for correct use: banner and contentinfo should not sit inside another landmark, there should only be one each of banner, main and contentinfo, and repeated navigation, complementary, region, search or form landmarks need a unique accessible name.'
     }));
     if (data.results.length) {
-      section.appendChild(el('p', {
-        class: 'test-note',
-        text: 'navigation, complementary, region, search and form landmarks are rarely needed in a short HTML email. They are listed here for reference and are not flagged just for being present.'
-      }));
+      section.appendChild(el('p', { class: 'test-note' }, [
+        'Navigation, complementary, region, search and form landmarks are rarely needed in a short HTML email. They are listed here for reference and are not flagged just for being present. This test can\u2019t judge whether a landmark\u2019s name is meaningful, or whether using these roles is the right choice for this email\u2019s content, that needs ',
+        el('strong', { text: 'manual review' }),
+        '.'
+      ]));
       var list = el('ul', { class: 'result-list' });
       data.results.forEach(function (r) {
         var flagged = r.issues.length > 0;
@@ -1169,10 +1185,11 @@ button {
         : 'Checking text colour against its background using WCAG ratios: 4.5:1 for normal text, 3:1 for large or bold text.'
     }));
     if (data.results.length) {
-      section.appendChild(el('p', {
-        class: 'test-note',
-        text: 'Only inline color and background-color styles can be resolved here. Where no background is set anywhere up the tree, white is assumed and noted below.'
-      }));
+      section.appendChild(el('p', { class: 'test-note' }, [
+        'Only inline color and background-color styles can be resolved here. Colours set another way, through stylesheets, CSS classes, or other computed styles, can\u2019t be checked. Where no background is found anywhere up the tree, white is assumed and noted below. Colours need ',
+        el('strong', { text: 'manual review' }),
+        '.'
+      ]));
       var list = el('ul', { class: 'result-list' });
       data.results.forEach(function (r) {
         var li = el('li', { class: r.pass ? 'result-item' : 'result-item result-item--flag' });
