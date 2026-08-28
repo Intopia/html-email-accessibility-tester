@@ -24,7 +24,7 @@ The whole tool is a single HTML file, plain JavaScript, no framework, no externa
 
 ## How each test works
 
-None of the tests involve judgment or interpretation. Each one asks a specific, factual question about the HTML structure, counts something, compares strings, checks DOM ancestry, or runs a fixed formula, and the pass/fail result falls directly out of the answer.
+None of the tests involve judgment or interpretation. Each one asks a specific, factual question about the HTML structure, counts something, compares strings, checks DOM ancestry, or runs a fixed formula, and the pass/fail result falls directly out of the answer. That said, a Pass on some of these tests confirms only part of what actually matters, see [why some tests carry a manual review note](#why-some-tests-carry-a-manual-review-note) at the end for which ones, and why.
 
 **1. Document title** — is there a `<title>` element in the `<head>`, and does it contain actual text once whitespace is trimmed?
 
@@ -45,3 +45,13 @@ None of the tests involve judgment or interpretation. Each one asks a specific, 
 **9. Duplicate IDs** — every element with an `id` is collected, and any `id` value that appears more than once is flagged. Zero ids present is a genuine Pass (zero ids means zero duplicates), not "Not tested."
 
 **10. Colour contrast** — the one test doing real maths rather than structural checks. For text with an inline `color` set, the nearest background colour is found by walking up the DOM until an ancestor with an explicit `background-color` (or legacy `bgcolor`) is found, defaulting to white if none exists. Both colours are converted to the WCAG relative luminance formula, and the contrast ratio between them is calculated. That ratio is compared against 4.5:1 for normal text or 3:1 for large or bold text, per the actual WCAG success criteria, not an approximation of them.
+
+## Why some tests carry a manual review note
+
+Five of the ten tests, Headings, Links, Images, Landmarks, and Colour contrast, show an extra note in their results pointing out that a Pass on that test still needs a second, human look. The other five don't carry that note. The split isn't arbitrary, it comes down to one question: **can this test's own Pass be technically correct while still missing the point of the rule it exists to enforce?**
+
+**Document title, Document language, Document encoding, Duplicate IDs** — each of these checks a single verifiable fact with nothing behind it. A `lang` attribute is present or it isn't. Two elements share an `id` or they don't. Once the fact is confirmed, there's nothing further to evaluate, so a Pass here is completely and permanently true.
+
+**Tables** — this one looks like it should belong in the caveated group, since "is this really a data table" sounds like a judgment call. But the rule built for it sidesteps that: a table only needs to be one of two valid, checkable shapes, `role="presentation"`/`"none"`, or a caption plus header cells. The test never has to guess at the author's intent, only which of the two shapes is present, so it stays unambiguous despite sounding like it shouldn't.
+
+**Headings, Links, Images, Landmarks, Colour contrast** — each of these confirms a necessary condition, not the actual goal behind it. A link having a unique, non-empty accessible name doesn't mean that name is any good, "click here" passes exactly the same as a genuinely descriptive one. A heading structure with no skipped levels doesn't mean the levels chosen reflect the content's real importance, or that a section which should have been a heading was marked up as one at all. A landmark structure with no nesting or duplication problems doesn't mean using those roles was the right call for this particular email. These five tests can all report a clean Pass while the underlying accessibility problem they exist to catch is still sitting right there. The manual review note exists to say that plainly, so a Pass is never mistaken for a guarantee.
