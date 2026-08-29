@@ -972,13 +972,13 @@ button {
       1: report.title.present ? 'pass' : 'fail',
       2: report.lang.present ? 'pass' : 'fail',
       3: report.encoding.present ? 'pass' : 'fail',
-      4: (!report.headings.present || !report.headings.logical) ? 'fail' : 'pass',
-      5: report.links.results.length === 0 ? 'na' : ((linkMissing || linkDup) ? 'fail' : 'pass'),
-      6: report.images.results.length === 0 ? 'na' : (imageMissing ? 'fail' : 'pass'),
+      4: (!report.headings.present || !report.headings.logical) ? 'fail' : 'warn',
+      5: report.links.results.length === 0 ? 'na' : ((linkMissing || linkDup) ? 'fail' : 'warn'),
+      6: report.images.results.length === 0 ? 'na' : (imageMissing ? 'fail' : 'warn'),
       7: report.tables.results.length === 0 ? 'na' : (report.tables.results.some(function (r) { return !r.ok; }) ? 'fail' : 'pass'),
-      8: report.landmarks.results.length === 0 ? 'na' : (report.landmarks.results.some(function (r) { return r.issues.length > 0; }) ? 'fail' : 'pass'),
+      8: report.landmarks.results.length === 0 ? 'na' : (report.landmarks.results.some(function (r) { return r.issues.length > 0; }) ? 'fail' : 'warn'),
       9: report.duplicateIds.duplicates.length > 0 ? 'fail' : 'pass',
-      10: report.contrast.results.length === 0 ? 'na' : (report.contrast.results.some(function (r) { return !r.pass; }) ? 'fail' : 'pass')
+      10: report.contrast.results.length === 0 ? 'na' : (report.contrast.results.some(function (r) { return !r.pass; }) ? 'fail' : 'warn')
     };
   }
 
