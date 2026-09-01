@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="shortcut icon" href="https://intopia.digital/wp-content/uploads/2017/06/cropped-Intopia_FINAL_icon-32x32.png" sizes="32x32">
+<link rel="shortcut icon" href="favicon.ico">
 <title>HTML email accessibility tester - Intopia</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
@@ -469,6 +469,7 @@ button {
 
     <section id="results-screen" hidden>
       <h2 id="results-heading" tabindex="-1">Results</h2>
+      <p id="report-filename" class="test-summary" hidden></p>
 
       <div class="summary">
         <h3>Summary</h3>
@@ -1272,6 +1273,21 @@ button {
   var startOverBtn = document.getElementById('start-over-btn');
   var errorMsg = document.getElementById('input-error');
   var resultsHeading = document.getElementById('results-heading');
+  var reportFilename = document.getElementById('report-filename');
+  var currentFileName = null;
+
+  function updateFileNameDisplay() {
+    reportFilename.textContent = '';
+    if (currentFileName) {
+      reportFilename.appendChild(document.createTextNode('File: '));
+      var strong = document.createElement('strong');
+      strong.textContent = currentFileName;
+      reportFilename.appendChild(strong);
+      reportFilename.hidden = false;
+    } else {
+      reportFilename.hidden = true;
+    }
+  }
 
   fileInput.addEventListener('change', function () {
     var file = fileInput.files && fileInput.files[0];
@@ -1281,12 +1297,18 @@ button {
       textarea.value = String(reader.result);
       errorMsg.textContent = '';
       textarea.removeAttribute('aria-invalid');
+      currentFileName = file.name;
     };
     reader.onerror = function () {
       errorMsg.textContent = 'Could not read that file. Try pasting the HTML instead.';
       textarea.setAttribute('aria-invalid', 'true');
+      currentFileName = null;
     };
     reader.readAsText(file);
+  });
+
+  textarea.addEventListener('input', function () {
+    currentFileName = null;
   });
 
   runBtn.addEventListener('click', function () {
@@ -1303,6 +1325,7 @@ button {
     var doc = new DOMParser().parseFromString(html, 'text/html');
     var report = runAllChecks(doc);
     renderReport(report);
+    updateFileNameDisplay();
 
     pasteScreen.hidden = true;
     resultsScreen.hidden = false;
@@ -1312,6 +1335,7 @@ button {
   startOverBtn.addEventListener('click', function () {
     textarea.value = '';
     fileInput.value = '';
+    currentFileName = null;
     errorMsg.textContent = '';
     textarea.removeAttribute('aria-invalid');
     resultsScreen.hidden = true;
