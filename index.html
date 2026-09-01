@@ -728,17 +728,29 @@ button {
   function checkLinks(doc) {
     var anchors = Array.prototype.slice.call(doc.querySelectorAll('a[href]'));
     var names = anchors.map(function (a) { return getAccessibleName(a, doc); });
-    var counts = {};
-    names.forEach(function (n) {
+
+    var byName = {};
+    names.forEach(function (n, i) {
       var key = n.trim().toLowerCase();
       if (!key) return;
-      counts[key] = (counts[key] || 0) + 1;
+      (byName[key] = byName[key] || []).push(i);
     });
+
+    var ambiguous = {};
+    Object.keys(byName).forEach(function (key) {
+      var idxs = byName[key];
+      if (idxs.length < 2) return;
+      var hrefs = {};
+      idxs.forEach(function (i) { hrefs[anchors[i].getAttribute('href')] = true; });
+      if (Object.keys(hrefs).length > 1) {
+        idxs.forEach(function (i) { ambiguous[i] = true; });
+      }
+    });
+
     var results = anchors.map(function (a, i) {
       var name = names[i].trim();
       var hasName = name.length > 0;
-      var key = name.toLowerCase();
-      var isUnique = hasName ? counts[key] === 1 : true;
+      var isUnique = hasName ? !ambiguous[i] : true;
       return { name: name, hasName: hasName, isUnique: isUnique, href: a.getAttribute('href') };
     });
     return { results: results };
@@ -1033,11 +1045,11 @@ button {
       class: 'test-summary',
       text: data.results.length === 0
         ? 'No links were found in this email.'
-        : 'Each link should have an accessible name, and that name should be unique.'
+        : 'Each link should have an accessible name, and links sharing the same name should go to the same place.'
     }));
     if (data.results.length) {
       section.appendChild(el('p', { class: 'test-note' }, [
-        'This test confirms a link has an accessible name and that the name is unique. It can\u2019t judge whether that name is genuinely meaningful, that needs ',
+        'This test confirms a link has an accessible name, and that links sharing the same name point to the same destination. It can\u2019t judge whether that name is genuinely meaningful, that needs ',
         el('strong', { text: 'manual review' }),
         '.'
       ]));
@@ -1046,7 +1058,7 @@ button {
         var flagged = !r.hasName || !r.isUnique;
         var li = el('li', { class: flagged ? 'result-item result-item--flag' : 'result-item' });
         if (!r.hasName) li.appendChild(el('span', { class: 'flag-badge', text: 'No accessible name' }));
-        else if (!r.isUnique) li.appendChild(el('span', { class: 'flag-badge', text: 'Not unique' }));
+        else if (!r.isUnique) li.appendChild(el('span', { class: 'flag-badge', text: 'Same name, different destination' }));
         li.appendChild(el('span', { class: 'result-text', text: r.hasName ? r.name : '(no accessible name)' }));
         if (r.href) li.appendChild(el('span', { class: 'result-meta', text: r.href }));
         list.appendChild(li);
