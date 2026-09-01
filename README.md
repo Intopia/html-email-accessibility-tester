@@ -35,6 +35,12 @@ Each test is a concrete, deterministic check, not a subjective quality score, so
 
 The `test-files/` and `landmark-test-files/` folders contain small, single-purpose HTML files, each one built to trigger exactly one pass or fail state. Useful for demoing the tool, or for verifying a change hasn't broken a specific test.
 
+## Working with .eml files
+
+This tool tests HTML markup, it doesn't currently understand `.eml` files (the raw email format some clients export). If you've been sent a `.eml` file, convert it to HTML first using an online converter such as [freeconvert.com's EML to HTML tool](https://www.freeconvert.com/eml-to-html/), then paste or upload the resulting HTML here.
+
+**Worth knowing:** unlike this tool, an online converter is a third-party service, the file is uploaded to their server, not processed locally. If the email contains confidential or client-sensitive content, keep that in mind before choosing a converter.
+
 ## Tech
 
 Vanilla HTML, CSS and JavaScript. No frameworks, no dependencies, no build tooling.
